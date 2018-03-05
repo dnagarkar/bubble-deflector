@@ -13,6 +13,7 @@ class Ball:
         self.thickness = 3
         self.speed_limit = 500
 
+
     def limit_speed(self, v):
         speed = la.norm(v)
         if speed < self.speed_limit:
@@ -20,47 +21,53 @@ class Ball:
         else:
             return self.speed_limit * v / speed
 
+
     def apply_force(self, force):
         self.acceleration = self.acceleration + force / self.mass
+
 
     def update(self, dt):
         self.velocity = self.limit_speed(dt * self.acceleration + self.velocity)
         self.position = dt * self.velocity + self.position
         self.acceleration = np.array([0, 0], dtype=np.float)
 
-    def fix_ball_positions(ball_a, ball_b):
-        error = ((ball_a.radius + ball_b.radius - la.norm(ball_a.position - ball_b.position)) / 2
-                    * (ball_a.position - ball_b.position) / la.norm(ball_a.position - ball_b.position))
-        ball_a.position = ball_a.position + error
-        ball_b.position = ball_b.position - error
-
-    def compute_ball_collision_forces(ball_a, ball_b, dt):
-        force_a = (-2 / dt * ball_a.mass * ball_b.mass / (ball_a.mass + ball_b.mass)
-                    * np.dot(ball_a.velocity - ball_b.velocity,
-                             ball_a.position - ball_b.position)
-                    / la.norm(ball_a.position - ball_b.position) ** 2
-                    * (ball_a.position - ball_b.position))
-        force_b = (-2 / dt * ball_a.mass * ball_b.mass / (ball_a.mass + ball_b.mass)
-                    * np.dot(ball_b.velocity - ball_a.velocity,
-                             ball_b.position - ball_a.position)
-                    / la.norm(ball_b.position - ball_a.position) ** 2
-                    * (ball_b.position - ball_a.position))
-
-        return force_a, force_b
 
     def ball_ball_collision(ball_a, ball_b, dt):
         if la.norm(ball_a.position - ball_b.position) <= ball_a.radius + ball_b.radius:
 
-            Ball.fix_ball_positions(ball_a, ball_b)
+            Ball.reset_ball_collision_positions(ball_a, ball_b)
 
             force_a, force_b = Ball.compute_ball_collision_forces(ball_a, ball_b, dt)
 
             ball_a.apply_force(force_a)
             ball_b.apply_force(force_b)
 
+
     def wall_collision(self, wall, dt):
+
+        d = self.compute_wall_collision_point(wall)
+
+        if d is not False:
+            normal = (self.position - d) / la.norm(self.position - d)
+            self.position = d + self.radius * normal
+            force = self.mass / dt * 2. * normal * np.dot(-self.velocity, normal)
+            self.apply_force(force)
+
+
+    def draw(self, screen):
+        position = self.position.astype(np.int)
+        screen_bounds = np.array([[0, 0], [screen.get_width(), screen.get_height()]], dtype=np.int)
+        if np.all(screen_bounds[0] < position) and np.all(position < screen_bounds[1]):
+            pygame.draw.circle(screen, self.color, position, self.radius, self.thickness)
+
+
+    def compute_wall_collision_point(self, wall):
+        """
+        Returns the point where ball and wall intersect or False if they do not
+        intersect.
+        """
         if la.norm(wall.a - wall.b) == 0:
-            return
+            return False
 
         d_norm = np.dot((wall.b - wall.a) / la.norm(wall.b - wall.a), self.position - wall.a)
         if 0 <= d_norm and d_norm <= la.norm(wall.b - wall.a):
@@ -70,18 +77,38 @@ class Ball:
         elif la.norm(wall.b - wall.a) < d_norm and d_norm <= la.norm(wall.b - wall.a) + self.radius:
             d = wall.b
         else:
-            return
+            return False
 
-        normal = self.position - d
-        distance = la.norm(normal)
-        normal = normal / distance
-        if distance <= self.radius:
-            self.position = d + self.radius * normal
-            force = self.mass / dt * 2 * normal * np.dot(-self.velocity, normal)
-            self.apply_force(force)
+        if la.norm(self.position - d) <= self.radius:
+            return d
+        return False
 
-    def draw(self, screen):
-        position = self.position.astype(np.int)
-        screen_bounds = np.array([[0, 0], [screen.get_width(), screen.get_height()]], dtype=np.int)
-        if np.all(screen_bounds[0] < position) and np.all(position < screen_bounds[1]):
-            pygame.draw.circle(screen, self.color, position, self.radius, self.thickness)
+    def compute_ball_collision_forces(ball_a, ball_b, dt):
+        """
+        Returns the two forces acting on ball_a and ball_b, respectively, when
+        they collide.
+        """
+        force_a = (-2. / dt * ball_a.mass * ball_b.mass / (ball_a.mass + ball_b.mass)
+                    * np.dot(ball_a.velocity - ball_b.velocity,
+                             ball_a.position - ball_b.position)
+                    / la.norm(ball_a.position - ball_b.position) ** 2.
+                    * (ball_a.position - ball_b.position))
+        force_b = (-2. / dt * ball_a.mass * ball_b.mass / (ball_a.mass + ball_b.mass)
+                    * np.dot(ball_b.velocity - ball_a.velocity,
+                             ball_b.position - ball_a.position)
+                    / la.norm(ball_b.position - ball_a.position) ** 2.
+                    * (ball_b.position - ball_a.position))
+
+        return force_a, force_b
+
+
+    def reset_ball_collision_positions(ball_a, ball_b):
+        """
+        Set the positions of ball_a and ball_b so that they intersect at exactly
+        one point.
+        """
+        distance = la.norm(ball_a.position - ball_b.position)
+        error = ((ball_a.radius + ball_b.radius - distance) / 2.
+                    * (ball_a.position - ball_b.position) / distance)
+        ball_a.position = ball_a.position + error
+        ball_b.position = ball_b.position - error

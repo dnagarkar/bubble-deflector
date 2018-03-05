@@ -9,6 +9,7 @@ class Wall:
         self.color = color
         self.thickness = 3
 
+
     def draw(self, screen):
         if la.norm(self.a - self.b) > 0:
             pygame.draw.line(screen, self.color, self.a, self.b, self.thickness)

@@ -17,6 +17,7 @@ class Game:
         self.max_num_balls = 30
         self.gravity = np.array([0, 300], dtype=np.float)
 
+
     def event_handler(self):
         for event in pygame.event.get():
             if event.type is pygame.QUIT:
@@ -40,6 +41,7 @@ class Game:
                     pos = pygame.mouse.get_pos()
                     self.walls[-1].b = pos
 
+
     def update(self, dt):
         for ball_a, ball_b in itertools.combinations(self.balls, r=2):
             Ball.ball_ball_collision(ball_a, ball_b, dt)
@@ -54,11 +56,13 @@ class Game:
         for ball in self.balls:
             ball.update(dt)
 
+
     def render(self):
         self.screen.fill((0, 0, 0))
         for _object in self.balls + self.walls:
             _object.draw(self.screen)
         pygame.display.flip()
+
 
     def play(self):
         self.is_running = True
@@ -84,6 +88,7 @@ class Game:
             self.update(dt)
             self.render()
 
+
     def add_ball(self):
         radius = int(np.random.randint(10, 30))
         x = int(np.random.randint(radius, self.width - radius))
@@ -91,9 +96,11 @@ class Game:
         color = np.floor(np.random.random(3) * 200 + 55).astype(np.int)
         self.balls.append(Ball((x, y), radius, color))
 
+
     def add_wall(self, a, b):
         color = np.floor(np.random.rand(3) * 200 + 55).astype(np.int)
         self.walls.append(Wall(a, b, color))
+
 
 if __name__ == "__main__":
     mygame = Game(width=400, height=400)
