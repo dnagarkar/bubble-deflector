@@ -28,25 +28,32 @@ class Ball:
         self.position = dt * self.velocity + self.position
         self.acceleration = np.array([0, 0], dtype=np.float)
 
+    def fix_ball_positions(ball_a, ball_b):
+        error = ((ball_a.radius + ball_b.radius - la.norm(ball_a.position - ball_b.position)) / 2
+                    * (ball_a.position - ball_b.position) / la.norm(ball_a.position - ball_b.position))
+        ball_a.position = ball_a.position + error
+        ball_b.position = ball_b.position - error
+
+    def compute_ball_collision_forces(ball_a, ball_b, dt):
+        force_a = (-2 / dt * ball_a.mass * ball_b.mass / (ball_a.mass + ball_b.mass)
+                    * np.dot(ball_a.velocity - ball_b.velocity,
+                             ball_a.position - ball_b.position)
+                    / la.norm(ball_a.position - ball_b.position) ** 2
+                    * (ball_a.position - ball_b.position))
+        force_b = (-2 / dt * ball_a.mass * ball_b.mass / (ball_a.mass + ball_b.mass)
+                    * np.dot(ball_b.velocity - ball_a.velocity,
+                             ball_b.position - ball_a.position)
+                    / la.norm(ball_b.position - ball_a.position) ** 2
+                    * (ball_b.position - ball_a.position))
+
+        return force_a, force_b
+
     def ball_ball_collision(ball_a, ball_b, dt):
         if la.norm(ball_a.position - ball_b.position) <= ball_a.radius + ball_b.radius:
-            # Hide this in another function
-            error = ((ball_a.radius + ball_b.radius - la.norm(ball_a.position - ball_b.position)) / 2
-                        * (ball_a.position - ball_b.position) / la.norm(ball_a.position - ball_b.position))
-            ball_a.position = ball_a.position + error
-            ball_b.position = ball_b.position - error
 
-            # Hide in compute ball collision function
-            force_a = (-2 / dt * ball_a.mass * ball_b.mass / (ball_a.mass + ball_b.mass)
-                        * np.dot(ball_a.velocity - ball_b.velocity,
-                                 ball_a.position - ball_b.position)
-                        / la.norm(ball_a.position - ball_b.position) ** 2
-                        * (ball_a.position - ball_b.position))
-            force_b = (-2 / dt * ball_a.mass * ball_b.mass / (ball_a.mass + ball_b.mass)
-                        * np.dot(ball_b.velocity - ball_a.velocity,
-                                 ball_b.position - ball_a.position)
-                        / la.norm(ball_b.position - ball_a.position) ** 2
-                        * (ball_b.position - ball_a.position))
+            Ball.fix_ball_positions(ball_a, ball_b)
+
+            force_a, force_b = Ball.compute_ball_collision_forces(ball_a, ball_b, dt)
 
             ball_a.apply_force(force_a)
             ball_b.apply_force(force_b)
