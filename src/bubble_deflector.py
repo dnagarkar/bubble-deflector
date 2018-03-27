@@ -24,18 +24,7 @@ class Game:
         We want to compute forces and detect collisions for all of our balls.
         Hint: Use for loops.
         """
-        for ball_a, ball_b in itertools.combinations(self.balls, r=2):
-            Ball.ball_ball_collision(ball_a, ball_b, dt)
-
-        for ball in self.balls:
-            ball.apply_force(self.gravity * ball.mass)
-
-        for ball in self.balls:
-            for wall in self.walls:
-                ball.wall_collision(wall, dt)
-
-        for ball in self.balls:
-            ball.update(dt)
+        pass # TODO: Delete this line and add your code!
 
 
     def render(self):
