@@ -8,31 +8,50 @@ class Ball:
         self.velocity = np.array([0, 0], dtype=np.float)
         self.acceleration = np.array([0, 0], dtype=np.float)
         self.radius = radius
-        self.mass = radius ** 2
+        self.mass = radius ** 2.
         self.color = color
         self.thickness = 3
         self.speed_limit = 500
 
 
-    def limit_speed(self, v):
-        speed = la.norm(v)
+    def limit_speed(self, velocity):
+        """
+        Returns a velocity that is no faster than self.speed_limit.
+        """
+        speed = la.norm(velocity)
         if speed < self.speed_limit:
-            return v
+            return velocity
         else:
-            return self.speed_limit * v / speed
+            return self.speed_limit * velocity / speed
 
 
     def apply_force(self, force):
+        """
+        Add this force to this ball.
+        Hint: Force = Mass * Acceleration
+        """
         self.acceleration = self.acceleration + force / self.mass
 
 
     def update(self, dt):
+        """
+        Update the velocity using acceleration.
+        (We also want to make sure the ball is not moving too fast)
+        Update position using velocity.
+        """
         self.velocity = self.limit_speed(dt * self.acceleration + self.velocity)
         self.position = dt * self.velocity + self.position
+        # We reset acceleration back to zero.
         self.acceleration = np.array([0, 0], dtype=np.float)
 
 
     def ball_ball_collision(ball_a, ball_b, dt):
+        """
+        We first want to check if `ball_a` and `ball_b` are colliding.
+        If so, we need to apply a force to each ball.
+        Hint: Take a look at `Ball.reset_ball_collision_positions`
+                and `Ball.compute_ball_collision_forces`
+        """
         if la.norm(ball_a.position - ball_b.position) <= ball_a.radius + ball_b.radius:
 
             Ball.reset_ball_collision_positions(ball_a, ball_b)
@@ -44,6 +63,11 @@ class Ball:
 
 
     def wall_collision(self, wall, dt):
+        """
+        We first want to check if this ball is colliding with `wall`.
+        If so, we want to compute the force on the ball.
+        Hint: Take a look at `self.compute_wall_collision_point`
+        """
 
         d = self.compute_wall_collision_point(wall)
 
@@ -55,6 +79,9 @@ class Ball:
 
 
     def draw(self, screen):
+        """
+        Draw this ball to the screen.
+        """
         position = self.position.astype(np.int)
         screen_bounds = np.array([[0, 0], [screen.get_width(), screen.get_height()]], dtype=np.int)
         if np.all(screen_bounds[0] < position) and np.all(position < screen_bounds[1]):
@@ -85,7 +112,7 @@ class Ball:
 
     def compute_ball_collision_forces(ball_a, ball_b, dt):
         """
-        Returns the two forces acting on ball_a and ball_b, respectively, when
+        Returns the two forces acting on `ball_a` and `ball_b` when
         they collide.
         """
         force_a = (-2. / dt * ball_a.mass * ball_b.mass / (ball_a.mass + ball_b.mass)
@@ -104,8 +131,8 @@ class Ball:
 
     def reset_ball_collision_positions(ball_a, ball_b):
         """
-        Set the positions of ball_a and ball_b so that they intersect at exactly
-        one point.
+        Set the positions of `ball_a` and `ball_b` so that they intersect at
+        exactly one point.
         """
         distance = la.norm(ball_a.position - ball_b.position)
         error = ((ball_a.radius + ball_b.radius - distance) / 2.

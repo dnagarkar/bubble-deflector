@@ -43,6 +43,11 @@ class Game:
 
 
     def update(self, dt):
+        """
+        This function is called onces per frame.
+        We want to compute forces and detect collisions for all of our balls.
+        Hint: Use for loops.
+        """
         for ball_a, ball_b in itertools.combinations(self.balls, r=2):
             Ball.ball_ball_collision(ball_a, ball_b, dt)
 
@@ -58,6 +63,9 @@ class Game:
 
 
     def render(self):
+        """
+        Draws all of our objects on to the screen.
+        """
         self.screen.fill((0, 0, 0))
         for _object in self.balls + self.walls:
             _object.draw(self.screen)
@@ -65,6 +73,9 @@ class Game:
 
 
     def play(self):
+        """
+        Sets up our scene and executes the game loop.
+        """
         self.is_running = True
         self.is_building_wall = False
         self.balls = []
@@ -90,6 +101,9 @@ class Game:
 
 
     def add_ball(self):
+        """
+        Add a new ball object to our scene.
+        """
         radius = int(np.random.randint(10, 30))
         x = int(np.random.randint(radius, self.width - radius))
         y = radius + 5
@@ -98,6 +112,9 @@ class Game:
 
 
     def add_wall(self, a, b):
+        """
+        Add a new wall object to our scene.
+        """
         color = np.floor(np.random.rand(3) * 200 + 55).astype(np.int)
         self.walls.append(Wall(a, b, color))
 

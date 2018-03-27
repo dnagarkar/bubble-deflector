@@ -11,5 +11,8 @@ class Wall:
 
 
     def draw(self, screen):
+        """
+        Draws this wall to the screen.
+        """
         if la.norm(self.a - self.b) > 0:
             pygame.draw.line(screen, self.color, self.a, self.b, self.thickness)
