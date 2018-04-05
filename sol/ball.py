@@ -35,14 +35,30 @@ class Ball:
 
     def update(self, dt):
         """
-        Update the velocity using acceleration.
-        (We also want to make sure the ball is not moving too fast)
-        Update position using velocity.
+        Update the velocity and position.
+        Hint: new_velocity = dt * acceleration + old_velocity
+        Hint: new_position = dt * velocity + old_position
         """
         self.velocity = self.limit_speed(dt * self.acceleration + self.velocity)
         self.position = dt * self.velocity + self.position
-        # We reset acceleration back to zero.
+        # The following line resets acceleration back to zero.
         self.acceleration = np.array([0, 0], dtype=np.float)
+
+
+    def wall_collision(self, wall, dt):
+        """
+        We first want to check if this ball is colliding with `wall`.
+        If so, we want to compute the force on the ball.
+        Hint: Take a look at `self.compute_wall_collision_point`
+        """
+
+        d = self.compute_wall_collision_point(wall)
+
+        if d is not False:
+            normal = (self.position - d) / la.norm(self.position - d)
+            self.position = d + self.radius * normal
+            force = self.mass / dt * 2. * normal * np.dot(-self.velocity, normal)
+            self.apply_force(force)
 
 
     def ball_ball_collision(ball_a, ball_b, dt):
@@ -60,22 +76,6 @@ class Ball:
 
             ball_a.apply_force(force_a)
             ball_b.apply_force(force_b)
-
-
-    def wall_collision(self, wall, dt):
-        """
-        We first want to check if this ball is colliding with `wall`.
-        If so, we want to compute the force on the ball.
-        Hint: Take a look at `self.compute_wall_collision_point`
-        """
-
-        d = self.compute_wall_collision_point(wall)
-
-        if d is not False:
-            normal = (self.position - d) / la.norm(self.position - d)
-            self.position = d + self.radius * normal
-            force = self.mass / dt * 2. * normal * np.dot(-self.velocity, normal)
-            self.apply_force(force)
 
 
     def draw(self, screen):

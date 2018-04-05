@@ -30,18 +30,34 @@ class Ball:
         Compute and update the acceleration on this ball.
         Hint: Force = Mass * Acceleration
         """
-        pass # TODO: Delete this line and add your code!
+        pass # TODO: 1. Delete this line and add your code!
 
 
     def update(self, dt):
         """
-        Update the velocity using acceleration.
-        (We also want to make sure the ball is not moving too fast)
-        Update position using velocity.
+        Update the velocity and position.
+        Hint: new_velocity = dt * acceleration + old_velocity
+        Hint: new_position = dt * velocity + old_position
         """
-        # TODO
-        # We reset acceleration back to zero.
+        # TODO: 2. Update the velocity.
+        # TODO: 3. Enforce a speed limit on the velocity.
+        # TODO: 4. Update the position.
+        # The following line resets acceleration back to zero.
         self.acceleration = np.array([0, 0], dtype=np.float)
+
+
+    def wall_collision(self, wall, dt):
+        """
+        We first want to check if this ball is colliding with `wall`.
+        If so, we want to compute the force on the ball.
+        Hint: Take a look at `self.compute_wall_collision_point`
+        """
+        pass # TODO: Delete this line and add your code!
+
+        # TODO: 6. Find the point where the ball collides with the wall.
+
+        # TODO: 7. Challenge! If the ball does collide with the wall,
+        # we need to update its position and apply a force.
 
 
     def ball_ball_collision(ball_a, ball_b, dt):
@@ -53,14 +69,8 @@ class Ball:
         """
         pass # TODO: Delete this line and add your code!
 
-
-    def wall_collision(self, wall, dt):
-        """
-        We first want to check if this ball is colliding with `wall`.
-        If so, we want to compute the force on the ball.
-        Hint: Take a look at `self.compute_wall_collision_point`
-        """
-        pass # TODO: Delete this line and add your code!
+        # TODO: 9. Check if the two balls are colliding.
+        # TODO: 10. If so, update both of their positions and apply both forces.
 
 
     def draw(self, screen):

@@ -22,7 +22,6 @@ class Game:
         """
         This function is called onces per frame.
         We want to compute forces and detect collisions for all of our balls.
-        Hint: Use for loops.
         """
         for ball_a, ball_b in itertools.combinations(self.balls, r=2):
             Ball.ball_ball_collision(ball_a, ball_b, dt)
