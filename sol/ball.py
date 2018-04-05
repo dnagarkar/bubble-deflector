@@ -27,7 +27,7 @@ class Ball:
 
     def apply_force(self, force):
         """
-        Add this force to this ball.
+        Compute and update the acceleration on this ball.
         Hint: Force = Mass * Acceleration
         """
         self.acceleration = self.acceleration + force / self.mass

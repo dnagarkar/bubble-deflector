@@ -27,7 +27,7 @@ class Ball:
 
     def apply_force(self, force):
         """
-        Add this force to this ball.
+        Compute and update the acceleration on this ball.
         Hint: Force = Mass * Acceleration
         """
         pass # TODO: Delete this line and add your code!
@@ -39,7 +39,7 @@ class Ball:
         (We also want to make sure the ball is not moving too fast)
         Update position using velocity.
         """
-        pass # TODO: Delete this line and add your code!
+        # TODO
         # We reset acceleration back to zero.
         self.acceleration = np.array([0, 0], dtype=np.float)
 
