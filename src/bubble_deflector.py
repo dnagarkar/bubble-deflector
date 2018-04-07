@@ -28,7 +28,7 @@ class Game:
         #     Ball.ball_ball_collision(ball_a, ball_b, dt)
 
         # TODO: 5. Use a for loop to apply the force of gravity to each ball.
-        # HINT: force_gravity = accelration_gravity * mass
+        # HINT: force_gravity = acceleration_gravity * mass
 
         # TODO: 8. Use a for loop to add wall collisions.
 
